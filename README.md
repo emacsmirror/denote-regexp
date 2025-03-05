@@ -6,6 +6,55 @@ SPDX-License-Identifier: GFDL-1.3-or-later
 
 # Denote Regexp [![Not Yet on MELPA](https://melpa.org/packages/denote-regexp-badge.svg)](https://melpa.org/#/denote-regexp) [![REUSE status](https://api.reuse.software/badge/git.sr.ht/~swflint/denote-regexp)](https://api.reuse.software/info/git.sr.ht/~swflint/denote-regexp)
 
+
+This library provides two user- or developer-facing functions, `denote-regexp` and `denote-regexp-rx`.
+The function `denote-regexp` uses `denote-regexp-rx` under the hood, and this may be helpful to developers primarily.
+In either case, they generate some representation of a regular expression to match Denote files, based on `denote-file-name-components-order` and user-provided input.
+Each of them take the following arguments:
+
+ - `:identifier` a (partial) identifier string.
+   If the length of the string is less than 15, it will be expanded with the `any` character class so that it fits 15 characters.
+   Additionally, if `identifier` is not the first element of `denote-file-name-components-order`, the "@@" prefix will be added.
+ - `:signature` a Denote file signature.
+   This will be sluggified using `denote-sluggify`, and the "==" prefix will be added.
+ - `:title` a note's title.
+   This should be a string, not a regular expression (a future feature).
+   This will be sluggified (using `denote-sluggify`), and prefixed with "--".
+ - `:keywords` keywords for a note.
+   This will be prefixed with "__".
+   The format of this argument is as follows:
+    - If it is a string, it well be passed to `denote-sluggify`.
+    - If it is a list, starting with `or` or `:or`, it will be treated as a regular expression disjunction (`rx`s `or`), and the remainder of the list will be processed recursively.
+    - If it is otherwise a list, (optionally starting with `and` or `:and`), it will be treated as a regular expression sequence.
+      If all remaining elements of the list are strings, it will be sorted following `denote-sort-keywords', otherwise, all - elements will be processed recursively.
+
+## Examples
+
+ - To match a file with the keywords "project" and "inprogress", use:
+```elisp
+(denote-regexp :keywords '("project" "inprogress"))
+```
+
+ - To match a file whose identifier starts with "2024", use:
+```elisp
+(denote-regexp :identifier "2024")
+```
+
+ - To match a file with the (unsluggified) signature `"soloway85:_from_probl_progr_plans"`, use:
+```elisp
+(denote-regexp :signature "soloway85:_from_probl_progr_plans")
+```
+
+ - To match a file with either the keyword "agenda" or both "project" and "inprogress", use:
+```elisp
+(denote-regexp :keywords '(or "agenda" (and "project" "inprogress")))
+```
+
+ - To match denote-journal-extras files from May of 2023, use:
+```elisp
+(denote-regexp :signature "202305" :keywords denote-journal-extras-keyword)
+```
+
 ## Errors and Patches
 
 If you find an error, or have a patch to improve this package, please send an email to `~swflint/emacs-utilities@lists.sr.ht`.
