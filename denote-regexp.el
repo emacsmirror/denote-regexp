@@ -162,7 +162,7 @@ This function prepends each field with its prefix, as follows:
     ('title
      `(and "--" ,(denote-sluggify 'title value)))
     ('keywords
-     `(and "_" (? "_") ,(denote-regexp--keywords value)))))
+     `(and "_" (? "_") (* any) ,(denote-regexp--keywords value)))))
 
 (defun denote-regexp-rx (&rest args)
   "Construct an `rx' form based on ARGS to match Denote files.
