@@ -5,7 +5,7 @@
 ;; Author: Samuel W. Flint <swflint@samuelwflint.com>
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; Homepage: https://git.sr.ht/~swflint/denote-regexp
-;; Version: 1.0.0
+;; Version: 1.1.0
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "26.1") (denote "3.0.0"))
 
@@ -61,6 +61,9 @@
 ;;       sorted following `denote-sort-keywords', otherwise, all -
 ;;       elements will be processed recursively.
 ;;
+;; Finally, a `denote' construct for `rx' is available as well, which
+;; follows the same arguments as above.
+;;
 ;;;;;; Examples
 ;;
 ;;  - To match a file with the keywords "project" and "inprogress", use:
@@ -79,6 +82,10 @@
 ;;
 ;;  - To match denote-journal-extras files from May of 2023, use:
 ;;     (denote-regexp :signature "202305" :keywords denote-journal-extras-keyword)
+;;
+;;  - To match in-progress projects as part of a denote-links block:
+;;    #+BEGIN: denote-links :regexp (denote :keywords '("project" "inprogress"))
+;;    #+END:
 ;;
 ;;;;;; Errors and Patches
 ;;
@@ -118,6 +125,7 @@ The following rules are used.
   (pcase keywords
     ((or
       `(or . ,kws)
+
       `(:or . ,kws))
      `(or ,@(mapcar #'denote-regexp--keywords kws)))
     ((or
@@ -233,6 +241,9 @@ ARGS should be a plist optionally containing the following properties:
 For examples, run (finder-commentary \"denote-regexp\").  See also
 `denote-regexp-rx'."
   (rx-to-string (apply #'denote-regexp-rx args)))
+
+(rx-define denote (&rest args)
+  (eval (denote-regexp-rx args)))
 
 (provide 'denote-regexp)
 ;;; denote-regexp.el ends here

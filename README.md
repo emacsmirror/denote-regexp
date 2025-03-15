@@ -28,6 +28,8 @@ Each of them take the following arguments:
     - If it is otherwise a list, (optionally starting with `and` or `:and`), it will be treated as a regular expression sequence.
       If all remaining elements of the list are strings, it will be sorted following `denote-sort-keywords', otherwise, all - elements will be processed recursively.
 
+Finally, a `denote` construct for `rx` is available as well, which follows the same arguments as above.
+
 ## Examples
 
  - To match a file with the keywords "project" and "inprogress", use:
@@ -53,6 +55,12 @@ Each of them take the following arguments:
  - To match denote-journal-extras files from May of 2023, use:
 ```elisp
 (denote-regexp :signature "202305" :keywords denote-journal-extras-keyword)
+```
+
+ - To match in-progress projects as part of a denote-links block:
+ ```org
+#+BEGIN: denote-links :regexp (denote :keywords '("project" "inprogress"))
+#+END:
 ```
 
 ## Errors and Patches
