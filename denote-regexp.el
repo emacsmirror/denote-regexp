@@ -5,7 +5,7 @@
 ;; Author: Samuel W. Flint <swflint@samuelwflint.com>
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; Homepage: https://git.sr.ht/~swflint/denote-regexp
-;; Version: 1.1.0
+;; Version: 1.2.0
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "26.1") (denote "3.0.0"))
 
@@ -60,6 +60,10 @@
 ;;       If all remaining elements of the list are strings, it will be
 ;;       sorted following `denote-sort-keywords', otherwise, all -
 ;;       elements will be processed recursively.
+;;
+;;  - `:file-type' will match known file types. This should be a
+;;    symbol or list of symbols representing file types which are part
+;;    of `denote-file-types'.
 ;;
 ;; Finally, a `denote' construct for `rx' is available as well, which
 ;; follows the same arguments as above.
@@ -170,7 +174,13 @@ This function prepends each field with its prefix, as follows:
     ('title
      `(and "--" ,(denote-sluggify 'title value)))
     ('keywords
-     `(and "_" (? "_") (* any) ,(denote-regexp--keywords value)))))
+     `(and "_" (? "_") (* any) ,(denote-regexp--keywords value)))
+    ('file-type
+     `(and
+       (or ,@(mapcar (lambda (type)
+                       (plist-get (alist-get type denote-file-types) :extension))
+                     value))
+       eol))))
 
 (defun denote-regexp-rx (&rest args)
   "Construct an `rx' form based on ARGS to match Denote files.
@@ -196,13 +206,19 @@ ARGS should be a plist optionally containing the following properties:
       `:and' or `and'.  These will be recursively formatted, joined with
       the `rx' `and' operator.
 
+ - `:file-type' will match known file types. This should be a
+   symbol or list of symbols representing file types which are part
+   of `denote-file-types'.
+
 For examples, run (finder-commentary \"denote-regexp\")."
   (unless (= 0 (mod (length args) 2))
     (error "The number of arguments to `denote-regexp' must be even"))
   (let* ((name-to-kw '((title . :title)
                        (signature . :signature)
                        (identifier . :identifier)
-                       (keywords . :keywords))))
+                       (keywords . :keywords)
+                       (file-type . :file-type)))
+         (base-rx ))
     (cons 'and
           (denote-regexp--intersperse-list
            '(* any)
@@ -212,7 +228,7 @@ For examples, run (finder-commentary \"denote-regexp\")."
                     (when-let* ((keyword (alist-get item name-to-kw))
                                 (index (seq-position args keyword)))
                       (denote-regexp--translate item (seq-elt args (1+ index)))))
-                  denote-file-name-components-order))))))
+                  (append denote-file-name-components-order '(file-type))))))))
 
 (defun denote-regexp (&rest args)
   "Construct a regexp based on ARGS to match Denote files.
@@ -237,6 +253,10 @@ ARGS should be a plist optionally containing the following properties:
    - A list of keyword specifiers, optionally prefixed with the symbol
      `:and' or `and'.  These will be recursively formatted, joined with
      the `rx' `and' operator.
+
+ - `:file-type' will match known file types. This should be a
+   symbol or list of symbols representing file types which are part
+   of `denote-file-types'.
 
 For examples, run (finder-commentary \"denote-regexp\").  See also
 `denote-regexp-rx'."

@@ -26,7 +26,9 @@ Each of them take the following arguments:
     - If it is a string, it well be passed to `denote-sluggify`.
     - If it is a list, starting with `or` or `:or`, it will be treated as a regular expression disjunction (`rx`s `or`), and the remainder of the list will be processed recursively.
     - If it is otherwise a list, (optionally starting with `and` or `:and`), it will be treated as a regular expression sequence.
-      If all remaining elements of the list are strings, it will be sorted following `denote-sort-keywords', otherwise, all - elements will be processed recursively.
+      If all remaining elements of the list are strings, it will be sorted following `denote-sort-keywords`, otherwise, all - elements will be processed recursively.
+ - `:file-type` will match known file types.
+   This should be a symbol or list of symbols representing file types which are part of `denote-file-types`.
 
 Finally, a `denote` construct for `rx` is available as well, which follows the same arguments as above.
 
