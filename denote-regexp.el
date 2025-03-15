@@ -234,7 +234,5 @@ For examples, run (finder-commentary \"denote-regexp\").  See also
 `denote-regexp-rx'."
   (rx-to-string (apply #'denote-regexp-rx args)))
 
-(denote-regexp :title "Foo")
-
 (provide 'denote-regexp)
 ;;; denote-regexp.el ends here
