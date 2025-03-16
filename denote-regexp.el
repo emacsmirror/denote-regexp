@@ -7,7 +7,7 @@
 ;; Homepage: https://git.sr.ht/~swflint/denote-regexp
 ;; Version: 1.2.0
 ;; Keywords: convenience
-;; Package-Requires: ((emacs "27.1") (denote "3.0.0"))
+;; Package-Requires: ((emacs "27.1") (denote "3.1.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -139,14 +139,14 @@ The following rules are used.
                                               (mapcar #'denote-regexp--keywords
                                                       (if (and denote-sort-keywords
                                                                (seq-every-p #'stringp kws))
-                                                          (seq-sort #'denote-sort-keywords-lessp kws)
+                                                          (seq-sort denote-sort-keywords-comparison-function kws)
                                                         kws)))))
     ((pred listp)
      `(and ,@(denote-regexp--intersperse-list '(* any)
                                               (mapcar #'denote-regexp--keywords
                                                       (if (and denote-sort-keywords
                                                                (seq-every-p #'stringp keywords))
-                                                          (seq-sort #'string< keywords)
+                                                          (seq-sort denote-sort-keywords-comparison-function keywords)
                                                         keywords)))))
     ((pred stringp)
      (format "_%s" (denote-sluggify 'keyword keywords)))))
