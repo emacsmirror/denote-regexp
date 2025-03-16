@@ -7,7 +7,7 @@
 ;; Homepage: https://git.sr.ht/~swflint/denote-regexp
 ;; Version: 1.2.0
 ;; Keywords: convenience
-;; Package-Requires: ((emacs "26.1") (denote "3.0.0"))
+;; Package-Requires: ((emacs "27.1") (denote "3.0.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
