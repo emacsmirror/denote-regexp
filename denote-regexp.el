@@ -217,8 +217,7 @@ For examples, run (finder-commentary \"denote-regexp\")."
                        (signature . :signature)
                        (identifier . :identifier)
                        (keywords . :keywords)
-                       (file-type . :file-type)))
-         (base-rx ))
+                       (file-type . :file-type))))
     (cons 'and
           (denote-regexp--intersperse-list
            '(* any)
