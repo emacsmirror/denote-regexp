@@ -68,7 +68,7 @@
 ;; Finally, a `denote' construct for `rx' is available as well, which
 ;; follows the same arguments as above.
 ;;
-;;;;;; Examples
+;; ** Examples
 ;;
 ;;  - To match a file with the keywords "project" and "inprogress", use:
 ;;     (denote-regexp :keywords '("project" "inprogress"))
@@ -91,7 +91,7 @@
 ;;    #+BEGIN: denote-links :regexp (denote :keywords '("project" "inprogress"))
 ;;    #+END:
 ;;
-;;;;;; Errors and Patches
+;; ** Errors and Patches
 ;;
 ;; If you find an error, or have a patch to improve this package,
 ;; please send an email to ~swflint/emacs-utilities@lists.sr.ht.
