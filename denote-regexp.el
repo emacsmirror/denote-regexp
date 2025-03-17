@@ -149,7 +149,7 @@ The following rules are used.
                                                           (seq-sort denote-sort-keywords-comparison-function keywords)
                                                         keywords)))))
     ((pred stringp)
-     (format "_%s" (denote-sluggify 'keyword keywords)))))
+     `(and bow ,(denote-sluggify 'keyword keywords) eow))))
 
 (defun denote-regexp--translate (field value)
   "Translate VALUE, based on FIELD.
@@ -174,7 +174,7 @@ This function prepends each field with its prefix, as follows:
     ('title
      `(and "--" ,(denote-sluggify 'title value)))
     ('keywords
-     `(and "_" (? "_") (* any) ,(denote-regexp--keywords value)))
+     `(and "__" (* any) ,(denote-regexp--keywords value)))
     ('file-type
      `(and
        (or ,@(mapcar (lambda (type)
