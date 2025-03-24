@@ -111,6 +111,8 @@ get (a z b z c) as a result."
       list
     (cons (car list) (cons intersperse (denote-regexp--intersperse-list intersperse (cdr list))))))
 
+(defvar denote-sort-keywords-comparison-function)
+
 (defun denote-regexp--keywords (keywords)
   "Convert KEYWORDS into an RX form.
 
