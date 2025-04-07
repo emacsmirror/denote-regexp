@@ -5,7 +5,7 @@
 ;; Author: Samuel W. Flint <swflint@samuelwflint.com>
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; Homepage: https://git.sr.ht/~swflint/denote-regexp
-;; Version: 1.2.0
+;; Version: 2.0.0
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "27.1") (denote "3.1.0"))
 
@@ -39,12 +39,12 @@
 ;;    `denote-file-name-components-order', the "@@" prefix will be
 ;;    added.
 ;;
-;;  - `:signature' a Denote file signature.  This will be sluggified
-;;    using `denote-sluggify', and the "==" prefix will be added.
+;;  - `:signature' a Denote file signature.  This will be prefixed with "==".  If a string, it will be sluggified with `denote-sluggify'; if a regular expression (i.e., a list), it will be passed through otherwise.
 ;;
-;;  - `:title' a note's title.  This should be a string, not a regular
-;;    expression (a future feature).  This will be sluggified (using
-;;    `denote-sluggify'), and prefixed with "--".
+;;  - `:title' a note's title.  This will be prefixed with "--".  If a
+;;    string, it will be sluggified with `denote-sluggify'; if a
+;;    regular expression (i.e., a list), it will be passed through
+;;    otherwise.
 ;;
 ;;  - `:keywords' keywords for a note.  This will be prefixed with
 ;;    "__".  The format of this argument is as follows:
@@ -172,16 +172,28 @@ This function prepends each field with its prefix, as follows:
            base-regexp
          `(and "@@" base-regexp))))
     ('signature
-     `(and "==" ,(denote-sluggify 'signature value)))
+     (cond
+      ((stringp value)
+       `(and "==" ,(denote-sluggify 'signature value)))
+      ((listp value)
+       `(and "==" ,value))
+      (value
+       "==")))
     ('title
-     `(and "--" ,(denote-sluggify 'title value)))
+     (cond
+      ((stringp value)
+       `(and "--" ,(denote-sluggify 'title value)))
+      ((listp value)
+       `(and "--" ,value))))
     ('keywords
      `(and "__" (* any) ,(denote-regexp--keywords value)))
     ('file-type
      `(and
        (or ,@(mapcar (lambda (type)
                        (plist-get (alist-get type denote-file-types) :extension))
-                     value))
+                     (if (listp value)
+                         value
+                       (list value))))
        eol))))
 
 (defun denote-regexp-rx (&rest args)
