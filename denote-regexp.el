@@ -5,7 +5,7 @@
 ;; Author: Samuel W. Flint <swflint@samuelwflint.com>
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; Homepage: https://git.sr.ht/~swflint/denote-regexp
-;; Version: 2.0.0
+;; Version: 2.1.0
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "27.1") (denote "3.1.0"))
 
@@ -61,9 +61,12 @@
 ;;       sorted following `denote-sort-keywords', otherwise, all -
 ;;       elements will be processed recursively.
 ;;
-;;  - `:file-type' will match known file types. This should be a
+;;  - `:file-type' will match known file types.  This should be a
 ;;    symbol or list of symbols representing file types which are part
 ;;    of `denote-file-types'.
+;;
+;; - `:directory' will match the subdirectory of a note.  This should be a
+;;   string or a regexp.
 ;;
 ;; Finally, a `denote' construct for `rx' is available as well, which
 ;; follows the same arguments as above.
@@ -162,7 +165,11 @@ This function prepends each field with its prefix, as follows:
    `denote-file-name-components-order'.
  - `signature' \"==\"
  - `title' \"--\"
- - `keywords' \"__\""
+ - `keywords' \"__\"
+
+For the pseudo-fields `file-type' and `directory', no prefix is
+prepended.  However, they are appended with `eol' or the backslash,
+respectively."
   (pcase field
     ('identifier
      (let ((base-regexp (if (= (length value) 15)
@@ -194,7 +201,10 @@ This function prepends each field with its prefix, as follows:
                      (if (listp value)
                          value
                        (list value))))
-       eol))))
+       eol)
+     )
+    ('directory
+     `(and ,value "/"))))
 
 (defun denote-regexp-rx (&rest args)
   "Construct an `rx' form based on ARGS to match Denote files.
@@ -224,10 +234,14 @@ ARGS should be a plist optionally containing the following properties:
    symbol or list of symbols representing file types which are part
    of `denote-file-types'.
 
+ - `:directory' will match the subdirectory of a note.  This should be a
+   string or a regexp.
+
 For examples, run (finder-commentary \"denote-regexp\")."
   (unless (= 0 (mod (length args) 2))
     (error "The number of arguments to `denote-regexp' must be even"))
-  (let* ((name-to-kw '((title . :title)
+  (let* ((name-to-kw '((directory . :directory)
+                       (title . :title)
                        (signature . :signature)
                        (identifier . :identifier)
                        (keywords . :keywords)
@@ -239,9 +253,11 @@ For examples, run (finder-commentary \"denote-regexp\")."
                  (mapcar
                   (lambda (item)
                     (when-let* ((keyword (alist-get item name-to-kw))
-                                (index (seq-position args keyword)))
-                      (denote-regexp--translate item (seq-elt args (1+ index)))))
-                  (append denote-file-name-components-order '(file-type))))))))
+                                (index (seq-position args keyword))
+                                (next-item (seq-elt args (1+ index))))
+                      (denote-regexp--translate item next-item)))
+                  (cons 'directory
+                        (append denote-file-name-components-order '(file-type)))))))))
 
 (defun denote-regexp (&rest args)
   "Construct a regexp based on ARGS to match Denote files.

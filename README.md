@@ -30,6 +30,8 @@ Each of them take the following arguments:
       If all remaining elements of the list are strings, it will be sorted following `denote-sort-keywords`, otherwise, all - elements will be processed recursively.
  - `:file-type` will match known file types.
    This should be a symbol or list of symbols representing file types which are part of `denote-file-types`.
+- `:directory` will match the subdirectory of a note.
+   This should be a string or a regexp.
 
 Finally, a `denote` construct for `rx` is available as well, which follows the same arguments as above.
 
